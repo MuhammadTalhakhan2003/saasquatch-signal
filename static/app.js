@@ -109,6 +109,7 @@ $("#run-btn").addEventListener("click", run);
 
 function openJob(jobId) {
   state.jobId = jobId; state.leads = []; state.seen = new Set();
+  try { history.replaceState(null, "", `?job=${jobId}`); } catch { /* ignore */ }
   $("#empty-state").hidden = true; $("#results-view").hidden = false;
   $("#progress-wrap").hidden = false;
   clearInterval(state.poll);
@@ -180,8 +181,9 @@ function keySignals(l) {
   (p.succession_signals || []).forEach((s) => out.push(`<span class="badge warn">${esc(s)}</span>`));
   if (p.recurring_hits >= 2) out.push('<span class="badge good">Recurring revenue</span>');
   const cats = Object.values(p.tech || {});
-  if (!cats.includes("crm") && !cats.includes("marketing")) out.push('<span class="badge neutral">No CRM</span>');
-  if (p.copyright_year && new Date().getFullYear() - p.copyright_year >= 2) out.push(`<span class="badge neutral">Site © ${p.copyright_year}</span>`);
+  const readable = l.crawl?.status === "ok";
+  if (readable && !cats.includes("crm") && !cats.includes("marketing")) out.push('<span class="badge neutral">No CRM</span>');
+  if (readable && p.copyright_year && new Date().getFullYear() - p.copyright_year >= 2) out.push(`<span class="badge neutral">Site © ${p.copyright_year}</span>`);
   if (l.crawl?.status === "blocked") out.push('<span class="badge warn">Bot-protected · verify</span>');
   if (l.crawl?.status === "thin") out.push('<span class="badge warn">JS site · partial data</span>');
   if ((p.enterprise_hits || 0) >= 1) out.push('<span class="badge bad">Franchise / enterprise</span>');
@@ -316,3 +318,9 @@ function toast(msg) {
 }
 
 init();
+
+// Shareable results: /?job=<id> opens that run directly.
+(() => {
+  const id = new URLSearchParams(location.search).get("job");
+  if (id && /^[a-f0-9]{6,32}$/.test(id)) openJob(id);
+})();
