@@ -92,7 +92,7 @@ USD 1,000 per month, open to discussion based on scope and responsibilities.
 >
 > - **GitHub repository:** https://github.com/MuhammadTalhakhan2003/saasquatch-signal
 > - **Video walkthrough (2 min):** https://www.loom.com/share/8fb699772d474e9e9b895dadba40885f
-> - **Live demo (optional):** [[Cloud Run / Render URL]]
+> - **Live demo (optional):** https://saasquatch-signal.onrender.com (free tier: first load may take ~30 s to wake up)
 > - **Business understanding answers:** included below (also in `docs/SUBMISSION.md` in the repo)
 > - **Resume:** attached
 >

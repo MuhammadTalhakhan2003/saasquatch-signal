@@ -4,6 +4,7 @@
 
 SaaSquatch is good at *finding* companies. A list of 500 companies still leaves the hard part to the rep. Who is actually reachable? Who is a real fit? Who do you call first, and what do you say? Signal handles that step. It enriches each lead from its own website and verifies the contact data. Then it scores the lead on three explainable dimensions and writes an AI brief and an opener. The ranked list exports straight into HubSpot or Salesforce.
 
+**🚀 Live demo:** https://saasquatch-signal.onrender.com (Render free tier, so the first load can take ~30 s)  
 **🎥 Video walkthrough (2 min):** https://www.loom.com/share/8fb699772d474e9e9b895dadba40885f
 
 > Built in about 5 hours for the Caprae Capital AI-Readiness challenge. I chose **Quality First**: one feature, end-to-end, production-shaped.
