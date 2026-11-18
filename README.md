@@ -101,7 +101,7 @@ Missing data never creates fake upside. If a site is bot-protected or JS-only, t
 
 - **Page cache**: every 200-OK page is stored in SQLite for 72h (configurable). Re-scoring a list with a different ICP, or overlapping lists from different reps, costs almost no network.
 - **MX cache**: an in-process LRU of 4,096 domains. Thousands of leads share a few hundred mail domains.
-- **Bounded concurrency**: 8 domains at once, and only one request at a time per domain. That is fast overall (the 11-row sample, 9 unique, finishes in **about 10–12 s**, and the slowest part is retrying the dead and bot-protected domains) and gentle on small-business hosting.
+- **Bounded concurrency**: 8 domains at once, and only one request at a time per domain. That is fast overall (the 10-row sample, 8 unique, finishes in **about 10–12 s**, and the slowest part is retrying the dead and bot-protected domains) and gentle on small-business hosting.
 - **AI spend control**: Claude runs only on the **top-N non-disqualified leads** (default 25) after heuristic ranking, at `effort: low`. Every other lead gets a free template brief.
 - **Fault isolation**: one broken site can never fail the batch. Each lead is saved as soon as it finishes, so the UI fills in progressively.
 
@@ -175,16 +175,16 @@ Interactive OpenAPI docs: `http://localhost:8000/docs`.
 
 ### Dataset
 
-`data/sample_leads.csv` is 11 rows of real regional home-services businesses. It deliberately includes two duplicate rows (different URL formats) and one dead domain, so that dedupe and disqualification are visible in the demo. Every value is pulled live from public websites at run time.
+`data/sample_leads.csv` is 10 rows of real regional home-services businesses. It deliberately includes two duplicate rows (different URL formats) and one dead domain, so that dedupe and disqualification are visible in the demo. Every value is pulled live from public websites at run time.
 
 ---
 
 ## Results on the sample list (cold run, heuristic mode)
 
-- 11 rows → **9 unique** (2 duplicates merged) → **1 dead domain removed** automatically
+- 10 rows → **8 unique** (2 duplicates merged) → **1 dead domain removed** automatically
 - 2 sites flagged as "partial data" (one bot-protected, one JS-only) instead of being given misleading scores
 - The national franchise (Roto-Rooter) is pushed **below** the family-run regional operators despite its 90-year history, which is what an ETA buyer wants
-- Founding year found for **6/6** readable sites, a direct phone for **6/6**, and a LinkedIn company page for **5/6**
+- Founding year found for **5/5** readable sites, a direct phone for **5/5**, and a LinkedIn company page for **4/5**
 
 ## Known limitations / next steps
 

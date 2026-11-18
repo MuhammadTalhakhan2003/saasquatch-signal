@@ -158,7 +158,9 @@ async def run_job(job_id: str, rows: list[dict], icp: dict) -> None:
         await asyncio.gather(*(worker(r) for r in rows))
 
     # Spend AI budget only on the leads that matter: top-N reachable by priority.
-    ranked = sorted((l for l in leads if not l["scores"]["disqualified"]),
+    # only fully-readable sites: AI on a bot wall / JS shell just produces noise
+    ranked = sorted((l for l in leads if not l["scores"]["disqualified"]
+                     and l.get("crawl", {}).get("status") == "ok"),
                     key=lambda l: l["scores"]["priority"], reverse=True)
     if AI_ENABLED and ranked:
         db.update_job(job_id, status="ai")

@@ -52,7 +52,7 @@ SYSTEM = (
 )
 
 _client = None
-_sem = asyncio.Semaphore(4)
+_sem = asyncio.Semaphore(2)
 
 
 def _get_client():
@@ -92,8 +92,10 @@ def _normalize(data: dict, source: str) -> dict | None:
                 val = [{"name": str(d.get("name", "")).strip(), "title": str(d.get("title", "")).strip()}
                        for d in val if isinstance(d, dict) and d.get("name")]
             else:
-                val = [str(x) for x in val][:3]
+                val = [str(x) for x in val if isinstance(x, str) and not x.startswith("<")][:3]
         else:
+            if isinstance(val, (dict, list)) or (isinstance(val, str) and val.strip().startswith("<")):
+                return None  # model echoed the template instead of answering
             val = str(val or "")
         out[key] = val
     out["source"] = source
@@ -110,15 +112,23 @@ async def ai_insights(lead: dict, playbook: str) -> dict | None:
 
 async def groq_insights(lead: dict, playbook: str) -> dict | None:
     """Groq (OpenAI-compatible chat completions) in JSON mode."""
-    schema_hint = json.dumps(INSIGHT_SCHEMA["properties"], indent=None)
+    schema_hint = json.dumps({
+        "summary": "<2 sentences: what the company does and for whom>",
+        "industry": "<industry>",
+        "business_model": "<e.g. recurring service contracts, project-based>",
+        "pain_points": ["<up to 3 specific pain points>"],
+        "ai_opportunities": ["<up to 3 concrete AI / automation levers>"],
+        "decision_makers": [{"name": "<person named on the site>", "title": "<their title>"}],
+        "opener": "<personalised first line of a cold email, max 40 words>",
+        "red_flags": ["<risks, or empty list>"],
+    })
     payload = {
         "model": GROQ_MODEL,
         "temperature": 0.3,
         "max_tokens": 3000,
         "response_format": {"type": "json_object"},
         "messages": [
-            {"role": "system", "content": SYSTEM + " Respond with a single JSON object only, with exactly "
-             "these keys and types: " + schema_hint},
+            {"role": "system", "content": SYSTEM + " Respond with a single JSON object only, filling in this template (replace every <...> with real content, use [] when unknown): " + schema_hint},
             {"role": "user", "content": json.dumps(_context(lead, playbook))},
         ],
     }
