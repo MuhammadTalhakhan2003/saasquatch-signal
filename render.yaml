@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: saasquatch-signal
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false   # set the value in the Render dashboard

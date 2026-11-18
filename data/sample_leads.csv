@@ -1,0 +1,12 @@
+company,website,industry,city,state
+Hiller Plumbing Heating Cooling & Electrical,hiller.com,Home Services,Nashville,TN
+Goettl Air Conditioning & Plumbing,goettl.com,HVAC,Phoenix,AZ
+Parker & Sons,parkerandsons.com,HVAC,Phoenix,AZ
+Abacus Plumbing Air Conditioning & Electrical,abacusplumbing.com,Plumbing,Houston,TX
+Baker Brothers Plumbing,bakerbrothersplumbing.com,Plumbing,Dallas,TX
+Berkeys,berkeys.com,HVAC,Southlake,TX
+John Moore Services,johnmoore.com,Home Services,Houston,TX
+Roto-Rooter,rotorooter.com,Plumbing,Cincinnati,OH
+Hiller (duplicate row),https://www.hiller.com/about-us/,Home Services,Nashville,TN
+Goettl (duplicate),GOETTL.COM,HVAC,Phoenix,AZ
+Dead Lead Example,this-company-closed-years-ago-xyz.com,Plumbing,Austin,TX

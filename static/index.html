@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SaaSquatch Signal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">◆</span>
+      <div>
+        <strong>SaaSquatch Signal</strong>
+        <small>Lead intelligence &amp; acquisition-fit scoring</small>
+      </div>
+    </div>
+    <div class="top-right">
+      <span id="ai-status" class="pill">AI: checking…</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- ============ LEFT: setup ============ -->
+    <aside class="panel setup">
+      <section>
+        <div class="step"><span>1</span> Add leads</div>
+        <p class="hint">Paste a SaaSquatch / Apollo CSV export or one website per line. Duplicates are merged automatically.</p>
+        <textarea id="leads-input" rows="9" placeholder="company,website,industry,state&#10;Acme HVAC,acmehvac.com,HVAC,TX&#10;&#10;— or —&#10;acmehvac.com&#10;https://www.example-plumbing.com"></textarea>
+        <div class="row gap">
+          <label class="btn ghost small" for="file-input">⬆ Upload CSV</label>
+          <input type="file" id="file-input" accept=".csv,.txt" hidden />
+          <button class="btn ghost small" id="sample-btn" type="button">Load sample list</button>
+          <span id="line-count" class="muted small-text"></span>
+        </div>
+      </section>
+
+      <section>
+        <div class="step"><span>2</span> Define your ideal target</div>
+        <div class="seg" role="radiogroup" aria-label="Playbook">
+          <button type="button" class="seg-btn active" data-playbook="acquisition" role="radio" aria-checked="true">
+            🏢 Acquisition sourcing
+          </button>
+          <button type="button" class="seg-btn" data-playbook="sales" role="radio" aria-checked="false">
+            📈 Sales prospecting
+          </button>
+        </div>
+        <p class="hint" id="playbook-hint">Ranks established, owner-operated SMBs with succession &amp; modernization upside.</p>
+
+        <label class="field">Target industries <small>(comma separated, optional)</small>
+          <input id="icp-industries" placeholder="hvac, plumbing, landscaping" />
+        </label>
+        <div class="grid3">
+          <label class="field">Min. years
+            <input id="icp-years" type="number" min="0" value="10" />
+          </label>
+          <label class="field">Min. staff
+            <input id="icp-min-emp" type="number" min="0" value="5" />
+          </label>
+          <label class="field">Max. staff
+            <input id="icp-max-emp" type="number" min="1" value="250" />
+          </label>
+        </div>
+        <label class="field">States <small>(optional)</small>
+          <input id="icp-states" placeholder="TX, FL, GA" />
+        </label>
+      </section>
+
+      <button class="btn primary block" id="run-btn" type="button">
+        <span>Enrich &amp; score leads</span>
+      </button>
+      <p class="muted tiny" id="run-note">Respects robots.txt · never sends emails · validates via DNS only</p>
+
+      <section class="history" id="history-section" hidden>
+        <div class="step plain">Recent runs</div>
+        <ul id="history"></ul>
+      </section>
+    </aside>
+
+    <!-- ============ RIGHT: results ============ -->
+    <section class="results">
+      <div id="empty-state" class="empty">
+        <div class="empty-card">
+          <h2>Turn a raw lead list into a ranked call sheet</h2>
+          <ol>
+            <li><b>Enrich</b> – crawls each site's home, about &amp; contact pages for emails, phones, owners, founding year, tech stack.</li>
+            <li><b>Verify</b> – dedupes domains, drops junk / disposable emails, checks every mail server (MX).</li>
+            <li><b>Prioritise</b> – explainable scores for reachability, acquisition fit &amp; digital gap.</li>
+            <li><b>Act</b> – AI brief + personalised opener per lead, one-click HubSpot / Salesforce export.</li>
+          </ol>
+          <button class="btn primary" id="empty-sample" type="button">Try it with the sample list →</button>
+        </div>
+      </div>
+
+      <div id="results-view" hidden>
+        <div class="progress-wrap" id="progress-wrap">
+          <div class="progress-label"><span id="progress-text">Starting…</span><span id="progress-pct">0%</span></div>
+          <div class="progress"><div class="bar" id="progress-bar"></div></div>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi"><small>Leads processed</small><strong id="k-total">0</strong><span id="k-dups" class="muted tiny"></span></div>
+          <div class="kpi accent"><small>Tier A — call first</small><strong id="k-a">0</strong></div>
+          <div class="kpi"><small>Verified emails</small><strong id="k-verified">0</strong><span id="k-verified-pct" class="muted tiny"></span></div>
+          <div class="kpi"><small>Named decision makers</small><strong id="k-people">0</strong></div>
+          <div class="kpi"><small>Removed (dead / parked)</small><strong id="k-dq">0</strong></div>
+        </div>
+
+        <div class="toolbar">
+          <input id="search" type="search" placeholder="Search company, domain, person…" />
+          <div class="chips" id="tier-chips">
+            <button class="chip on" data-tier="A">A</button>
+            <button class="chip on" data-tier="B">B</button>
+            <button class="chip on" data-tier="C">C</button>
+            <button class="chip" data-tier="X" title="Unreachable / parked">✕</button>
+          </div>
+          <label class="check"><input type="checkbox" id="f-verified" /> Verified email</label>
+          <label class="check"><input type="checkbox" id="f-person" /> Has decision maker</label>
+          <div class="spacer"></div>
+          <div class="export">
+            <button class="btn dark" id="export-btn" type="button">Export ▾</button>
+            <div class="menu" id="export-menu" hidden>
+              <button data-fmt="hubspot">HubSpot import CSV</button>
+              <button data-fmt="salesforce">Salesforce leads CSV</button>
+              <button data-fmt="standard">Full data CSV</button>
+              <label class="check menu-opt"><input type="checkbox" id="exp-ab" checked /> Tier A + B only</label>
+              <label class="check menu-opt"><input type="checkbox" id="exp-verified" /> Verified emails only</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tier</th>
+                <th data-sort="priority" class="sortable">Score ↓</th>
+                <th>Company</th>
+                <th>Decision maker</th>
+                <th>Best contact</th>
+                <th data-sort="founded" class="sortable">Founded</th>
+                <th>Key signals</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+          <p class="muted center" id="no-rows" hidden>No leads match these filters.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ Lead drawer ============ -->
+  <div class="scrim" id="scrim" hidden></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <button class="close" id="drawer-close" aria-label="Close">✕</button>
+    <div id="drawer-body"></div>
+  </aside>
+
+  <div class="toast" id="toast" hidden></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
