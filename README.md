@@ -133,7 +133,7 @@ Missing data never creates fake upside. If a site is bot-protected or JS-only, t
 ## Setup
 
 ```bash
-git clone <this repo> && cd saasquatch-signal
+git clone https://github.com/MuhammadTalhakhan2003/saasquatch-signal.git && cd saasquatch-signal
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 

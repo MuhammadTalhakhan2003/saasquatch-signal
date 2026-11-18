@@ -90,7 +90,7 @@ USD 1,000 per month, open to discussion based on scope and responsibilities.
 >
 > Please find my Full Stack Developer handbook submission below.
 >
-> - **GitHub repository:** [[https://github.com/<you>/saasquatch-signal]]
+> - **GitHub repository:** https://github.com/MuhammadTalhakhan2003/saasquatch-signal
 > - **Video walkthrough (2 min):** [[Loom / YouTube unlisted / Drive link]]
 > - **Live demo (optional):** [[Cloud Run / Render URL]]
 > - **Business understanding answers:** included below (also in `docs/SUBMISSION.md` in the repo)
